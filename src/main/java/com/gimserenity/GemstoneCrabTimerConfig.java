@@ -1,10 +1,11 @@
 package com.gimserenity;
 
-import java.awt.Color;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.Range;
+
+import java.awt.*;
 
 @ConfigGroup("gemstonecrab")
 public interface GemstoneCrabTimerConfig extends Config
@@ -71,5 +72,25 @@ public interface GemstoneCrabTimerConfig extends Config
 	default boolean showDpsTracker()
 	{
 		return true;
+	}
+
+	@ConfigItem(
+		keyName = "pulseScreen",
+		name = "Pulse Screen",
+		description = "Pulse the screen overlay when the tunnel is highlighted"
+	)
+	default boolean pulseScreen()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "pulseColor",
+		name = "Pulse Color",
+		description = "Color of the screen pulse"
+	)
+	default Color pulseColor()
+	{
+		return new Color(255, 0, 0, 128); // Semi-transparent red
 	}
 }

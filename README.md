@@ -45,3 +45,16 @@ A RuneLite plugin for enhancing the Gemstone Crab boss afk experience.
 ## Support
 
 For issues, suggestions, or contributions, please open an issue on the GitHub repository.
+
+
+## Recent Updates
+
+### Estimated Time Left Countdown
+- Added an "Est Time Left" timer to the DPS overlay, shown below the "Duration"
+- Countdown uses Jagex’s base 10-minute timer for the Gemstone Crab and updates in real-time based on remaining HP
+- Helps players better gauge how much time remains in the current fight
+
+### Screen Pulse Highlighting
+- "Pulse Screen" option now available in config to enable/disable the visual effect
+- "Pulse Color" config allows users to customize the highlight color used when the tunnel is active
+- Includes a built-in pulse delay to prevent rapid flashing, making the effect more comfortable for users

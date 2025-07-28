@@ -8,9 +8,7 @@ import net.runelite.client.ui.overlay.components.PanelComponent;
 import net.runelite.client.ui.overlay.components.TitleComponent;
 
 import javax.inject.Inject;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.text.DecimalFormat;
 
 public class GemstoneCrabTimerDpsOverlay extends Overlay
@@ -33,22 +31,19 @@ public class GemstoneCrabTimerDpsOverlay extends Overlay
     @Override
     public Dimension render(Graphics2D graphics)
     {
-        // Don't render if DPS tracking is disabled in config
+        // Check if DPS tracker is enabled in config
         if (!config.showDpsTracker())
         {
             return null;
         }
         
-        // Don't render if player is not in a Gemstone Crab area
-        if (!plugin.isPlayerInGemstoneArea())
+        // Don't show if no fight is in progress and no damage has been done
+        if (!plugin.isFightInProgress() && plugin.getTotalDamage() == 0)
         {
             return null;
         }
         
-        // Set up the panel
         panelComponent.getChildren().clear();
-        panelComponent.setBackgroundColor(new Color(18, 18, 18)); // Dark background
-        panelComponent.setPreferredSize(new Dimension(150, 0));
         
         // Add title
         panelComponent.getChildren().add(TitleComponent.builder()
@@ -68,19 +63,20 @@ public class GemstoneCrabTimerDpsOverlay extends Overlay
             .right(DPS_FORMAT.format(plugin.getCurrentDps()))
             .build());
         
-        // Add XP gained
-        panelComponent.getChildren().add(LineComponent.builder()
-            .left("XP Gained:")
-            .right(String.format("%,d", plugin.getTotalXpGained()))
-            .build());
-
-        // Add fight duration
+        // Add countdown timer and duration
         if (plugin.isFightInProgress() || plugin.getFightDuration() > 0)
         {
-            long seconds = plugin.getFightDuration() / 1000;
+            long duration = plugin.getFightDuration() / 1000;
             panelComponent.getChildren().add(LineComponent.builder()
                 .left("Duration:")
-                .right(String.format("%d:%02d", seconds / 60, seconds % 60))
+                .right(String.format("%d:%02d", duration / 60, duration % 60))
+                .build());
+
+            long millisLeft = plugin.getEstimatedTimeRemainingMillis();
+            long secondsLeft = millisLeft / 1000;
+            panelComponent.getChildren().add(LineComponent.builder()
+                .left("Est Time Left:")
+                .right(String.format("%d:%02d", secondsLeft / 60, secondsLeft % 60))
                 .build());
         }
         
