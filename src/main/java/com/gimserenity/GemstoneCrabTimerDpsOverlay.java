@@ -1,22 +1,39 @@
 package com.gimserenity;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.text.DecimalFormat;
+import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
+import net.runelite.client.ui.overlay.components.ComponentOrientation;
+import net.runelite.client.ui.overlay.components.ImageComponent;
 import net.runelite.client.ui.overlay.components.LineComponent;
 import net.runelite.client.ui.overlay.components.PanelComponent;
 import net.runelite.client.ui.overlay.components.TitleComponent;
 import javax.inject.Inject;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.text.DecimalFormat;
 
 public class GemstoneCrabTimerDpsOverlay extends Overlay
 {
     private final GemstoneCrabTimerPlugin plugin;
     private final PanelComponent panelComponent = new PanelComponent();
     private static final DecimalFormat DPS_FORMAT = new DecimalFormat("#,##0.0");
+    
+    // Gem item IDs for icons
+    private static final int UNCUT_OPAL_ITEM_ID = net.runelite.api.gameval.ItemID.UNCUT_OPAL;
+    private static final int UNCUT_JADE_ITEM_ID = net.runelite.api.gameval.ItemID.UNCUT_JADE;
+    private static final int UNCUT_RED_TOPAZ_ITEM_ID = net.runelite.api.gameval.ItemID.UNCUT_RED_TOPAZ;
+    private static final int UNCUT_SAPPHIRE_ITEM_ID = net.runelite.api.gameval.ItemID.UNCUT_SAPPHIRE;
+    private static final int UNCUT_EMERALD_ITEM_ID = net.runelite.api.gameval.ItemID.UNCUT_EMERALD;
+    private static final int UNCUT_RUBY_ITEM_ID = net.runelite.api.gameval.ItemID.UNCUT_RUBY;
+    private static final int UNCUT_DIAMOND_ITEM_ID = net.runelite.api.gameval.ItemID.UNCUT_DIAMOND;
+    private static final int UNCUT_DRAGONSTONE_ITEM_ID = net.runelite.api.gameval.ItemID.UNCUT_DRAGONSTONE;
+    
+    @Inject
+    private ItemManager itemManager;
     
     @Inject
     private GemstoneCrabTimerDpsOverlay(GemstoneCrabTimerPlugin plugin)
@@ -32,68 +49,74 @@ public class GemstoneCrabTimerDpsOverlay extends Overlay
     @Override
     public Dimension render(Graphics2D graphics)
     {
-        // Don't render if DPS tracking is disabled in config
-        if (!config.showDpsTracker())
-        {
-            return null;
-        }
-        
         // Don't render if player is not in a Gemstone Crab area
         if (!plugin.isPlayerInGemstoneArea())
         {
             return null;
         }
         
+        // Set panel properties for proper sizing
+        panelComponent.setPreferredSize(new Dimension(165, 0));
+        // Ensure proper spacing between components
+        panelComponent.setGap(new Point(0, 4));
+        
         // Set up the panel
         panelComponent.getChildren().clear();
         panelComponent.setBackgroundColor(new Color(18, 18, 18, 180)); // Dark background
-        panelComponent.setPreferredSize(new Dimension(150, 0));
+        // Already set preferred size above, no need to set it again
         
-        // Add title
-        panelComponent.getChildren().add(TitleComponent.builder()
-            .text("Gemstone Crab")
-            .color(Color.GREEN)
-            .build());
-        
-        // Add total damage
-        panelComponent.getChildren().add(LineComponent.builder()
-            .left("Total Damage:")
-            .right(String.format("%,d", plugin.getTotalDamage()))
-            .build());
-        
-        // Add DPS
-        panelComponent.getChildren().add(LineComponent.builder()
-            .left("DPS:")
-            .right(DPS_FORMAT.format(plugin.getCurrentDps()))
-            .build());
-        
-        // Add XP gained
-        panelComponent.getChildren().add(LineComponent.builder()
-            .left("XP Gained:")
-            .right(String.format("%,d", plugin.getTotalXpGained()))
-            .build());
-
-        // Add fight duration
-        if (plugin.isFightInProgress() || plugin.getFightDuration() > 0)
+        // Show main stats section if enabled
+        if (config.showMainStats())
         {
-            long seconds = plugin.getFightDuration() / 1000;
-            panelComponent.getChildren().add(LineComponent.builder()
-                .left("Duration:")
-                .right(String.format("%d:%02d", seconds / 60, seconds % 60))
+            // Add title
+            panelComponent.getChildren().add(TitleComponent.builder()
+                .text("Current Fight")
+                .color(Color.GREEN)
                 .build());
-        }
-        
-        // Add estimated time left
-        if (plugin.isFightInProgress())
-        {
-            long timeLeftMillis = plugin.getEstimatedTimeRemainingMillis();
-            if (timeLeftMillis > 0)
-            {
-                long secondsLeft = timeLeftMillis / 1000;
+                
+            // Add total damage if enabled
+            if (config.displayTotalDamage()) {
                 panelComponent.getChildren().add(LineComponent.builder()
-                    .left("Time Left:")
-                    .right(String.format("%d:%02d", secondsLeft / 60, secondsLeft % 60))
+                    .left("Total Damage:")
+                    .right(String.format("%,d", plugin.getTotalDamage()))
                     .build());
+            }
+            
+            // Add DPS if enabled
+            if (config.displayDps()) {
+                panelComponent.getChildren().add(LineComponent.builder()
+                    .left("DPS:")
+                    .right(DPS_FORMAT.format(plugin.getCurrentDps()))
+                    .build());
+            }
+            
+            // Add XP gained if enabled
+            if (config.displayXpGained()) {
+                panelComponent.getChildren().add(LineComponent.builder()
+                    .left("XP Gained:")
+                    .right(String.format("%,d", plugin.getTotalXpGained()))
+                    .build());
+            }
+            
+            // Add fight duration if enabled
+            if (config.displayDuration()) {
+                long seconds = plugin.getFightDuration() / 1000;
+                panelComponent.getChildren().add(LineComponent.builder()
+                    .left("Duration:")
+                    .right(String.format("%d:%02d", seconds / 60, seconds % 60))
+                    .build());
+            }
+            
+            // Add estimated time left if enabled
+            if (config.displayTimeLeft() && plugin.isFightInProgress()) {
+                long timeLeftMillis = plugin.getEstimatedTimeRemainingMillis();
+                if (timeLeftMillis > 0) {
+                    long secondsLeft = timeLeftMillis / 1000;
+                    panelComponent.getChildren().add(LineComponent.builder()
+                        .left("Time Left:")
+                        .right(String.format("%d:%02d", secondsLeft / 60, secondsLeft % 60))
+                        .build());
+                }
             }
         }
 
@@ -132,13 +155,107 @@ public class GemstoneCrabTimerDpsOverlay extends Overlay
                     .build());
             }
 
-            if (config.displayFailedMiningCount()) {
+            if (config.displayGemCount()) {
                 panelComponent.getChildren().add(LineComponent.builder()
                     .left("Gems Mined:")
                     .right(String.valueOf(plugin.getGemsCount()))
                     .build());
             }
         }
+        
+        // Show gem tracking section if enabled
+        if (config.showGemTracking()) {
+            
+            panelComponent.getChildren().add(TitleComponent.builder()
+                .text("Gem Tracking")
+                .color(Color.GREEN)
+                .build());
+            
+            // First row panel for first 4 gems
+            PanelComponent firstRowPanel = new PanelComponent();
+            firstRowPanel.setOrientation(ComponentOrientation.HORIZONTAL);
+            // Set width but let height adjust automatically
+            firstRowPanel.setPreferredSize(new Dimension(175, 0));
+            // Small gap between gems in the row
+            firstRowPanel.setGap(new Point(4, 0));
+            
+            // First row gems (opal, jade, topaz, sapphire)
+            if (config.displayOpals()) {
+                firstRowPanel.getChildren().add(new ImageComponent(
+                    itemManager.getImage(UNCUT_OPAL_ITEM_ID, plugin.getOpalsCount(), true)));
+            }
+            
+            if (config.displayJades()) {
+                firstRowPanel.getChildren().add(new ImageComponent(
+                    itemManager.getImage(UNCUT_JADE_ITEM_ID, plugin.getJadesCount(), true)));
+            }
+            
+            if (config.displayRedTopaz()) {
+                firstRowPanel.getChildren().add(new ImageComponent(
+                    itemManager.getImage(UNCUT_RED_TOPAZ_ITEM_ID, plugin.getRedTopazCount(), true)));
+            }
+            
+            if (config.displaySapphires()) {
+                firstRowPanel.getChildren().add(new ImageComponent(
+                    itemManager.getImage(UNCUT_SAPPHIRE_ITEM_ID, plugin.getSapphiresCount(), true)));
+            }
+            
+            // Only add the first row panel if it has gems to display
+            if (!firstRowPanel.getChildren().isEmpty()) {
+                panelComponent.getChildren().add(firstRowPanel);
+                
+                // Add a small spacer before the second row if both rows will be shown
+                if (config.displayEmeralds() || config.displayRubies() || 
+                    config.displayDiamonds() || config.displayDragonstones()) {
+                    panelComponent.getChildren().add(LineComponent.builder().build());
+                }
+            }
+            
+            // Second row 
+            PanelComponent secondRowPanel = new PanelComponent();
+            secondRowPanel.setOrientation(ComponentOrientation.HORIZONTAL);
+            // Set width but let height adjust automatically
+            secondRowPanel.setPreferredSize(new Dimension(175, 0));
+            // Small gap between gems in the row
+            secondRowPanel.setGap(new Point(4, 0));
+            
+            // Second row gems (emerald, ruby, diamond, dragonstone) - always show all gems
+            if (config.displayEmeralds()) {
+                secondRowPanel.getChildren().add(new ImageComponent(
+                    itemManager.getImage(UNCUT_EMERALD_ITEM_ID, plugin.getEmeraldsCount(), true)));
+            }
+            
+            if (config.displayRubies()) {
+                secondRowPanel.getChildren().add(new ImageComponent(
+                    itemManager.getImage(UNCUT_RUBY_ITEM_ID, plugin.getRubiesCount(), true)));
+            }
+            
+            if (config.displayDiamonds()) {
+                secondRowPanel.getChildren().add(new ImageComponent(
+                    itemManager.getImage(UNCUT_DIAMOND_ITEM_ID, plugin.getDiamondsCount(), true)));
+            }
+            
+            if (config.displayDragonstones()) {
+                secondRowPanel.getChildren().add(new ImageComponent(
+                    itemManager.getImage(UNCUT_DRAGONSTONE_ITEM_ID, plugin.getDragonstonesCount(), true)));
+            }
+            
+            // Only add the second row if it has gems to display
+            if (!secondRowPanel.getChildren().isEmpty()) {
+                panelComponent.getChildren().add(secondRowPanel);
+            }
+            
+            // Padding
+            panelComponent.getChildren().add(LineComponent.builder().build());
+            panelComponent.getChildren().add(LineComponent.builder()
+                .left(" ")
+                .build());
+            
+            // Keep main panel in vertical orientation for the rest of the overlay
+            panelComponent.setOrientation(ComponentOrientation.VERTICAL);
+        }
+        
+
 
         
         return panelComponent.render(graphics);

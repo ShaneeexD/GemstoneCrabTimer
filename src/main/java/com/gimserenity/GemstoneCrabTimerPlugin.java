@@ -77,6 +77,16 @@ public class GemstoneCrabTimerPlugin extends Plugin
 	private static final String CONFIG_KEY_FAILED = "failedMiningCount";
 	private static final String CONFIG_KEY_GEMS_MINED = "gemsMined";
 	
+	// Gem tracking keys
+	private static final String CONFIG_KEY_OPALS = "opals";
+	private static final String CONFIG_KEY_JADES = "jades";
+	private static final String CONFIG_KEY_RED_TOPAZ = "redTopaz";
+	private static final String CONFIG_KEY_SAPPHIRES = "sapphires";
+	private static final String CONFIG_KEY_EMERALDS = "emeralds";
+	private static final String CONFIG_KEY_RUBIES = "rubies";
+	private static final String CONFIG_KEY_DIAMONDS = "diamonds";
+	private static final String CONFIG_KEY_DRAGONSTONES = "dragonstones";
+	
 	@Inject
 	private Client client;
 
@@ -109,9 +119,7 @@ public class GemstoneCrabTimerPlugin extends Plugin
 	
 	// Track all tunnels in the scene
 	private final Map<WorldPoint, GameObject> tunnels = new HashMap<>();
-	
-	// Screen pulse tracking
-	
+		
 	// Smooth time left tracking
 	private int lastHpPercent = 100;
 	private long lastHpUpdateTime = 0;
@@ -144,6 +152,16 @@ public class GemstoneCrabTimerPlugin extends Plugin
 	private int miningAttempts;
 	private int miningFailedCount;
 	private int gemsMined;
+	
+	// Gem tracking
+	private int opals = 0;
+	private int jades = 0;
+	private int redTopaz = 0;
+	private int sapphires = 0;
+	private int emeralds = 0;
+	private int rubies = 0;
+	private int diamonds = 0;
+	private int dragonstones = 0;
 
 	// Overlay for highlighting tunnels
 	@Inject
@@ -295,6 +313,47 @@ public class GemstoneCrabTimerPlugin extends Plugin
         return gemsMined;
     }
 	
+	// Gem tracking getter methods
+	public int getOpalsCount()
+	{
+		return opals;
+	}
+	
+	public int getJadesCount()
+	{
+		return jades;
+	}
+	
+	public int getRedTopazCount()
+	{
+		return redTopaz;
+	}
+	
+	public int getSapphiresCount()
+	{
+		return sapphires;
+	}
+	
+	public int getEmeraldsCount()
+	{
+		return emeralds;
+	}
+	
+	public int getRubiesCount()
+	{
+		return rubies;
+	}
+	
+	public int getDiamondsCount()
+	{
+		return diamonds;
+	}
+	
+	public int getDragonstonesCount()
+	{
+		return dragonstones;
+	}
+	
 	//Reset all DPS tracking variables
 	private void resetDpsTracking()
 	{
@@ -337,6 +396,16 @@ public class GemstoneCrabTimerPlugin extends Plugin
 		minedCount = util.loadConfigValue(CONFIG_GROUP, CONFIG_KEY_MINED);
 		miningFailedCount = util.loadConfigValue(CONFIG_GROUP, CONFIG_KEY_FAILED);
 		gemsMined = util.loadConfigValue(CONFIG_GROUP, CONFIG_KEY_GEMS_MINED);
+		
+		// Load individual gem counts
+		opals = util.loadConfigValue(CONFIG_GROUP, CONFIG_KEY_OPALS);
+		jades = util.loadConfigValue(CONFIG_GROUP, CONFIG_KEY_JADES);
+		redTopaz = util.loadConfigValue(CONFIG_GROUP, CONFIG_KEY_RED_TOPAZ);
+		sapphires = util.loadConfigValue(CONFIG_GROUP, CONFIG_KEY_SAPPHIRES);
+		emeralds = util.loadConfigValue(CONFIG_GROUP, CONFIG_KEY_EMERALDS);
+		rubies = util.loadConfigValue(CONFIG_GROUP, CONFIG_KEY_RUBIES);
+		diamonds = util.loadConfigValue(CONFIG_GROUP, CONFIG_KEY_DIAMONDS);
+		dragonstones = util.loadConfigValue(CONFIG_GROUP, CONFIG_KEY_DRAGONSTONES);
 	}
 
 	
@@ -573,6 +642,8 @@ public class GemstoneCrabTimerPlugin extends Plugin
 		}
 	}
 
+
+
 	@Subscribe
 	public void onGameStateChanged(GameStateChanged gameStateChanged)
 	{
@@ -596,6 +667,8 @@ public class GemstoneCrabTimerPlugin extends Plugin
 			}
 		}
 	}
+	
+
 
 	/*
 	 * Handles Gemstone Crab Mining Events
@@ -609,14 +682,14 @@ public class GemstoneCrabTimerPlugin extends Plugin
 			
 			if (message.equalsIgnoreCase(GEMSTONE_CRAB_MINE_SUCCESS_MESSAGE)) {
 				if (!isMiningBeforeCooldown()) {
-					log.info("Gemstone Crab successfully mined!");
+					log.debug("Gemstone Crab successfully mined!");
 					miningAttempts++;
 					minedCount++;
 					setLastMiningAttempt();
 				}
 			} else if (message.equalsIgnoreCase(GEMSTONE_CRAB_MINE_FAIL_MESSAGE)) {
 				if (!isMiningBeforeCooldown()) {
-					log.info("Failed to mine Gemstone Crab!");
+					log.debug("Failed to mine Gemstone Crab!");
 					miningAttempts++;
 					miningFailedCount++;
 					setLastMiningAttempt();
@@ -624,9 +697,52 @@ public class GemstoneCrabTimerPlugin extends Plugin
 			} else if (message.contains(GEMSTONE_CRAB_GEM_MINE_MESSAGE)) {
 				log.debug("Gem mined");
 				gemsMined++;
+				
+				// Track specific gem types
+				if (message.contains("opal")) {
+					opals++;
+					log.debug("Opal mined");
+				} else if (message.contains("jade")) {
+					jades++;
+					log.debug("Jade mined");
+				} else if (message.contains("red topaz")) {
+					redTopaz++;
+					log.debug("Red topaz mined");
+				} else if (message.contains("sapphire")) {
+					sapphires++;
+					log.debug("Sapphire mined");
+				} else if (message.contains("emerald")) {
+					emeralds++;
+					log.debug("Emerald mined");
+				} else if (message.contains("ruby")) {
+					rubies++;
+					log.debug("Ruby mined");
+				} else if (message.contains("diamond")) {
+					diamonds++;
+					log.debug("Diamond mined");
+				} else if (message.contains("dragonstone")) {
+					dragonstones++;
+					log.debug("Dragonstone mined");
+				}
 			}
 			saveCrabCounts();
         }
+		// Handle chat commands
+		else if (chatMessage.getType() == ChatMessageType.PUBLICCHAT || 
+			chatMessage.getType() == ChatMessageType.PRIVATECHAT || 
+			chatMessage.getType() == ChatMessageType.FRIENDSCHAT || 
+			chatMessage.getType() == ChatMessageType.CLAN_CHAT || 
+			chatMessage.getType() == ChatMessageType.CLAN_GUEST_CHAT ||
+			chatMessage.getType() == ChatMessageType.CLAN_GIM_CHAT) {
+			
+			String message = chatMessage.getMessage();
+			
+			// Check for the reset stats command
+			if (message.equalsIgnoreCase("!Resetgemcrab")) {
+				log.debug("Reset stats command received");
+				resetStats();
+			}
+		}
 	}
 
 	
@@ -762,7 +878,50 @@ public class GemstoneCrabTimerPlugin extends Plugin
 		configManager.setConfiguration(CONFIG_GROUP, CONFIG_KEY_MINING_ATTEMPTS, String.valueOf(miningAttempts));
 		configManager.setConfiguration(CONFIG_GROUP, CONFIG_KEY_MINED, String.valueOf(minedCount));
 		configManager.setConfiguration(CONFIG_GROUP, CONFIG_KEY_FAILED, String.valueOf(miningFailedCount));
-    }
+		configManager.setConfiguration(CONFIG_GROUP, CONFIG_KEY_GEMS_MINED, String.valueOf(gemsMined));
+		
+		// Save gem tracking
+		configManager.setConfiguration(CONFIG_GROUP, CONFIG_KEY_OPALS, String.valueOf(opals));
+		configManager.setConfiguration(CONFIG_GROUP, CONFIG_KEY_JADES, String.valueOf(jades));
+		configManager.setConfiguration(CONFIG_GROUP, CONFIG_KEY_RED_TOPAZ, String.valueOf(redTopaz));
+		configManager.setConfiguration(CONFIG_GROUP, CONFIG_KEY_SAPPHIRES, String.valueOf(sapphires));
+		configManager.setConfiguration(CONFIG_GROUP, CONFIG_KEY_EMERALDS, String.valueOf(emeralds));
+		configManager.setConfiguration(CONFIG_GROUP, CONFIG_KEY_RUBIES, String.valueOf(rubies));
+		configManager.setConfiguration(CONFIG_GROUP, CONFIG_KEY_DIAMONDS, String.valueOf(diamonds));
+		configManager.setConfiguration(CONFIG_GROUP, CONFIG_KEY_DRAGONSTONES, String.valueOf(dragonstones));
+	}
+	
+	/*
+	 * Reset all mining and gem statistics
+	 */
+	public void resetStats() {
+		// Reset all stats variables
+		crabCount = 0;
+		miningAttempts = 0;
+		minedCount = 0;
+		miningFailedCount = 0;
+		gemsMined = 0;
+		
+		// Reset gem tracking variables
+		opals = 0;
+		jades = 0;
+		redTopaz = 0;
+		sapphires = 0;
+		emeralds = 0;
+		rubies = 0;
+		diamonds = 0;
+		dragonstones = 0;
+		
+		// Save the reset values to config
+		saveCrabCounts();
+		
+		// Notify the user
+		if (client != null) {
+			String msg = new ChatMessageBuilder().append(Color.BLUE, "[Gemstone Crab] All Gemstone Crab statistics have been reset.").build();
+			client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", msg, "");
+			log.debug("All Gemstone Crab statistics have been reset");
+		}
+	}
 
 	/*
 	 * Set the last mining attempt time
