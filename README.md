@@ -108,7 +108,7 @@ For issues, suggestions, or contributions, please open an issue on the GitHub re
 ## Changelog
 
 ### V1.1.2
-- Message now show [Gemstone Crab] in front of them
+- Messages now show [Gemstone Crab] in front of them
 
 ### V1.1.1
 - Fix issue with multiple notificaitons
