@@ -4,6 +4,7 @@ import java.awt.Color;
 
 import com.google.inject.Provides;
 import javax.inject.Inject;
+
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
@@ -25,7 +26,6 @@ import net.runelite.api.events.StatChanged;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
-import net.runelite.client.chat.ChatMessageBuilder;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -898,7 +898,7 @@ public class GemstoneCrabTimerPlugin extends Plugin
 		
 		// Notify the user
 		if (client != null) {
-			sendChatMessage(Color.BLUE, "All Gemstone Crab statistics have been reset.", true);
+			util.sendChatMessage(Color.BLUE, "All Gemstone Crab statistics have been reset.", true);
 			log.debug("All Gemstone Crab statistics have been reset");
 		}
 	}
@@ -931,28 +931,14 @@ public class GemstoneCrabTimerPlugin extends Plugin
 		if (isValidKill()) {
 			crabCount++;
 			saveCrabCounts();
-			sendChatMessage(Color.RED, String.format("Gemstone Crab Killed! KC: %d", crabCount), config.displayKillMessage());
+			util.sendChatMessage(Color.RED, String.format("Gemstone Crab Killed! KC: %d", crabCount), config.displayKillMessage());
 			log.debug("Gemstone crab killed! KC: {}", crabCount);
 		}
 		else {
-			sendChatMessage(Color.MAGENTA, "Gemstone Crab not fought long enough for kill count.", config.displayKillMessage());
+			util.sendChatMessage(Color.MAGENTA, "Gemstone Crab not fought long enough for kill count.", config.displayKillMessage());
 			log.debug("Gemstone crab kill did not count!");
 		}
 		
-	}
-
-	/*
-	 * Send a chat message with the specified color and message
-	 * Only sends if the feature is enabled in the config
-	 */
-	private void sendChatMessage(Color color, String message, boolean isEnabled) {
-		if (!isEnabled) {
-			return;
-		}
-		String formattedMessage = new ChatMessageBuilder()
-			.append(color, String.format( "[Gemstone Crab] %s", message))
-			.build();
-		client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", formattedMessage, "");
 	}
 
 	@Provides

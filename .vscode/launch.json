@@ -6,16 +6,16 @@
             "type": "java",
             "name": "Run Gemstone Crab Plugin with debug",
             "request": "launch",
-            "mainClass": "com.gimserenity.GemstoneCrabPluginTest",
+            "mainClass": "com.gimserenity.launcher.GemstoneCrabPluginDebug",
             "projectName": "GemstoneCrabTimer",
             "vmArgs": "-ea",
             "args": "--developer-mode --debug"
         },
         {
             "type": "java",
-            "name": "Run Gemstone Crab Timer Plugin",
+            "name": "Run Gemstone Crab Plugin",
             "request": "launch",
-            "mainClass": "com.gimserenity.GemstoneCrabPluginTest",
+            "mainClass": "com.gimserenity.launcher.GemstoneCrabPluginDebug",
             "projectName": "GemstoneCrabTimer",
             "vmArgs": "-ea",
             "args": "--developer-mode"
