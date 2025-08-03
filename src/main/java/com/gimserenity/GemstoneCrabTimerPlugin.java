@@ -950,7 +950,7 @@ public class GemstoneCrabTimerPlugin extends Plugin
 			return;
 		}
 		String formattedMessage = new ChatMessageBuilder()
-			.append(color, String.format(message, "[Gemstone Crab] %s", message))
+			.append(color, String.format( "[Gemstone Crab] %s", message))
 			.build();
 		client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", formattedMessage, "");
 	}
