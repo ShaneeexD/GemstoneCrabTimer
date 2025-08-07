@@ -104,6 +104,12 @@ For issues, suggestions, or contributions, please open an issue on the GitHub re
 
 ## Changelog
 
+### V2.0.0
+- Top 3 placement Tracking
+- Players attacking the crab count
+- Shell highlighting based on if player can after kill
+- Fix: Kill count spam if there are too many entities
+
 ### V1.1.3
 - Fix: Also reset tunnel highlight when boss respawns (same area)
 - Fix: Changed time left & notification to use getHealthRatio and getHealthScale instead of reading widget, this allows all HP bar configurations to work

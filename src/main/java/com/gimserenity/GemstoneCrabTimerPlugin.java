@@ -32,9 +32,11 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
 
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @PluginDescriptor(
@@ -779,15 +781,8 @@ public class GemstoneCrabTimerPlugin extends Plugin
 				isTop16Damager = true;
 				updateCrabShell();
 				log.debug("Shell highlighting enabled (green) - isTop16Damager: {}, shell: {}", isTop16Damager, crabShell != null ? crabShell.getId() : "null");
-			} else if (message.startsWith(GEMSTONE_CRAB_TOP3_MESSAGE)) {
-				log.debug("Top 3 crab crushers message detected: {}", message);
-				String playerName = client.getLocalPlayer().getName();
-				String namesSection = message.substring(GEMSTONE_CRAB_TOP3_MESSAGE.length());
-				
-				if (namesSection.contains(playerName + ",") || 
-				    namesSection.contains(playerName + " &") || 
-				    namesSection.contains(playerName + "!")) {
-					log.debug("Player {} is confirmed in the top 3 crab crushers!", playerName);
+			} else if (message.startsWith(GEMSTONE_CRAB_TOP3_MESSAGE)) {				
+				if (isTop3Player(message)) {
 					top3Count++;
 					saveCrabCounts();
 				}
@@ -1125,6 +1120,21 @@ public class GemstoneCrabTimerPlugin extends Plugin
 			log.debug("Gemstone crab kill did not count!");
 		}
 		
+	}
+
+	public boolean isTop3Player(String message) {
+		log.debug("Top 3 crab crushers message detected: {}", message);
+		String playerName = client.getLocalPlayer().getName();
+		String namesSection = message.substring(GEMSTONE_CRAB_TOP3_MESSAGE.length());
+		
+		boolean isTop3Player = Arrays.asList(namesSection.split("[,&!]"))
+			.stream()
+			.map(String::trim)
+            .filter(name -> !name.isEmpty())
+            .collect(Collectors.toList())
+			.contains(playerName);
+		
+		return isTop3Player;
 	}
 
 	@Provides
