@@ -20,11 +20,23 @@ public interface GemstoneCrabTimerConfig extends Config
 	String notificationList = "notificationList";
 
 	@ConfigItem(
+		keyName = "nextSpawnNotification",
+		name = "Next Spawn Notification",
+		description = "Show a notification when the next Gemstone Crab spawns",
+		section = notificationList,
+		position = 0
+	)
+	default Notification nextSpawnNotification()
+	{
+		return Notification.OFF;
+	}
+
+	@ConfigItem(
 		keyName = "hpThresholdNotification",
 		name = "HP Threshold Notification",
 		description = "Show a notification when the Gemstone Crab reaches the HP threshold",
 		section = notificationList,
-		position = 0
+		position = 1
 	)
 	default Notification hpThresholdNotification()
 	{
@@ -40,7 +52,7 @@ public interface GemstoneCrabTimerConfig extends Config
 		name = "HP Threshold %",
 		description = "Send notification when Gemstone Crab HP reaches this percentage",
 		section = notificationList,
-		position = 1
+		position = 2
 	)
 	default int hpThreshold()
 	{
@@ -49,10 +61,10 @@ public interface GemstoneCrabTimerConfig extends Config
 	
 	@ConfigItem(
 		keyName = "notificationMessage",
-		name = "Notification Message",
+		name = "HP Threshold Notification Message",
 		description = "Message to show in the notification",
 		section = notificationList,
-		position = 2
+		position = 3
 	)
 	default String notificationMessage()
 	{

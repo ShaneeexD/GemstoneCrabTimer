@@ -32,6 +32,9 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.Text;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import java.util.Arrays;
 import java.util.EnumMap;
@@ -122,8 +125,12 @@ public class GemstoneCrabTimerPlugin extends Plugin
 	@Inject
     private GemstoneCrabUtil util;
 	
-	// Track if we've already sent a notification for this boss fight
-	private boolean notificationSent = false;
+	// Track if we've already sent a hp threshold notification for this boss fight
+	private boolean hpNotificationSent = false;
+
+	// Track if we've already scheduled a spawn notification
+	private boolean spawnNotificationSent = false;
+	private static final ScheduledExecutorService spawnScheduler = Executors.newSingleThreadScheduledExecutor();
 	
 	// Track if the boss is present
 	private boolean bossPresent = false;
@@ -211,7 +218,8 @@ public class GemstoneCrabTimerPlugin extends Plugin
 	protected void startUp() throws Exception
 	{
 		log.info("Gemstone Crab Plugin started!");
-		notificationSent = false;
+		hpNotificationSent = false;
+		spawnNotificationSent = false;
 		shouldHighlightTunnel = false;
 		shouldHighlightShell = false;
 		nearestTunnel = null;
@@ -232,7 +240,8 @@ public class GemstoneCrabTimerPlugin extends Plugin
 	protected void shutDown() throws Exception
 	{
 		log.info("Gemstone Crab Timer stopped!");
-		notificationSent = false;
+		hpNotificationSent = false;
+		spawnNotificationSent = false;
 		bossPresent = false;
 		shouldHighlightTunnel = false;
 		shouldHighlightShell = false;
@@ -544,8 +553,8 @@ public class GemstoneCrabTimerPlugin extends Plugin
 		{
 			log.debug("Gemstone Crab boss spawned");
 			bossPresent = true;
-			notificationSent = false;
-
+			hpNotificationSent = false;
+			spawnNotificationSent = false;
 				
 			resetTunnel();
 			// Start a new DPS tracking session
@@ -675,7 +684,7 @@ public class GemstoneCrabTimerPlugin extends Plugin
 		}
 
 		// Check boss HP for notification
-		if (bossPresent && config.hpThresholdNotification().isEnabled() && !notificationSent)
+		if (bossPresent && (config.hpThresholdNotification().isEnabled() || config.nextSpawnNotification().isEnabled()))
 		{
 			checkBossHpAndNotify();
 		}
@@ -718,7 +727,8 @@ public class GemstoneCrabTimerPlugin extends Plugin
 		if (gameStateChanged.getGameState() == GameState.LOGGED_IN)
 		{
 			// Reset notification state when logging in
-			notificationSent = false;
+			hpNotificationSent = false;
+			spawnNotificationSent = false;
             clientThread.invoke(this::loadSavedConfiguration);
 		}
 		else if (gameStateChanged.getGameState() == GameState.LOADING)
@@ -898,12 +908,23 @@ public class GemstoneCrabTimerPlugin extends Plugin
 			// Calculate current HP percentage (0-100)
 			hpPercent = (((double) healthRatio / (double) healthScale) * 100);
 			
-			// Check if HP is at or below the threshold
-			if (hpPercent <= (config.hpThreshold()) && !notificationSent)
+			// Check if HP is at or below the notification threshold
+			if (config.hpThresholdNotification().isEnabled() && hpPercent <= (config.hpThreshold()) && !hpNotificationSent)
 			{
-				notificationSent = true;
+				hpNotificationSent = true;
 				notifier.notify(config.hpThresholdNotification(), config.notificationMessage() + " (" + config.hpThreshold() + "% HP)");
 				log.debug("Sent notification for Gemstone Crab at {}% HP", hpPercent);
+			}
+
+			// Check if the HP is at or below 0 and schedule the next spawn notification
+			if (config.nextSpawnNotification().isEnabled() && hpPercent <= 0 && !spawnNotificationSent)
+			{
+				spawnNotificationSent = true;
+				spawnScheduler.schedule(() -> 
+				{
+					notifier.notify(config.nextSpawnNotification(), "Gemstone Crab has spawned");
+					log.debug("Sent notification for next Gemstone Crab spawn");
+				}, 17, TimeUnit.SECONDS);
 			}
 		}
 		catch (Exception e)
