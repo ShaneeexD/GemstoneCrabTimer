@@ -90,6 +90,7 @@ public class GemstoneCrabTimerPlugin extends Plugin
 	private static final String CONFIG_KEY_MINED = "minedCount";
 	private static final String CONFIG_KEY_FAILED = "failedMiningCount";
 	private static final String CONFIG_KEY_GEMS_MINED = "gemsMined";
+	private static final String CONFIG_KEY_CUMULATIVE_XP = "cumulativeXp";
 	
 	// Gem tracking keys
 	private static final String CONFIG_KEY_OPALS = "opals";
@@ -196,6 +197,9 @@ public class GemstoneCrabTimerPlugin extends Plugin
 	
 	// Track times player has been in top 3
 	private int top3Count = 0;
+	
+	// Cumulative XP tracking across all kills
+	private int cumulativeXp = 0;
 
 	// Overlay for highlighting tunnels
 	@Inject
@@ -275,6 +279,10 @@ public class GemstoneCrabTimerPlugin extends Plugin
 	 */
 	public int getTop3Count() {
 		return top3Count;
+	}
+	
+	public int getCumulativeXp() {
+		return cumulativeXp;
 	}
 	
 	public boolean shouldHighlightTunnel()
@@ -485,6 +493,9 @@ public class GemstoneCrabTimerPlugin extends Plugin
 		
 		// Load top 3 count
 		top3Count = util.loadConfigValue(CONFIG_GROUP, Constants.CONFIG_KEY_TOP3_COUNT);
+		
+		// Load cumulative XP
+		cumulativeXp = util.loadConfigValue(CONFIG_GROUP, CONFIG_KEY_CUMULATIVE_XP);
 	}
 
 	
@@ -1015,6 +1026,9 @@ public class GemstoneCrabTimerPlugin extends Plugin
 		
 		// Save top 3 count
 		configManager.setRSProfileConfiguration(CONFIG_GROUP, Constants.CONFIG_KEY_TOP3_COUNT, top3Count);
+		
+		// Save cumulative XP
+		configManager.setRSProfileConfiguration(CONFIG_GROUP, CONFIG_KEY_CUMULATIVE_XP, cumulativeXp);
 	}
 	
 	/*
@@ -1037,6 +1051,9 @@ public class GemstoneCrabTimerPlugin extends Plugin
 		rubies = 0;
 		diamonds = 0;
 		dragonstones = 0;
+		
+		// Reset cumulative XP
+		cumulativeXp = 0;
 		
 		// Save the reset values to config
 		saveCrabCounts();
@@ -1112,9 +1129,11 @@ public class GemstoneCrabTimerPlugin extends Plugin
 	private void updateKillStats() {
 		if (isValidKill()) {
 			crabCount++;
+			// Accumulate XP from this kill
+			cumulativeXp += totalXpGained;
 			saveCrabCounts();
 			util.sendChatMessage(Color.RED, String.format("Gemstone Crab Killed! KC: %d", crabCount), config.displayKillMessage());
-			log.debug("Gemstone crab killed! KC: {}", crabCount);
+			log.debug("Gemstone crab killed! KC: {}, XP gained: {}, Cumulative XP: {}", crabCount, totalXpGained, cumulativeXp);
 		}
 		else {
 			util.sendChatMessage(Color.MAGENTA, "Gemstone Crab not fought long enough for kill count.", config.displayKillMessage());

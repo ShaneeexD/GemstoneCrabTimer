@@ -182,6 +182,13 @@ public class GemstoneCrabTimerDpsOverlay extends Overlay
                     .right(String.valueOf(plugin.getTop3Count()))
                     .build());
             }
+            
+            if (configStore.getValue(Constants.DISPLAY_CUMULATIVE_XP)) {
+                panelComponent.getChildren().add(LineComponent.builder()
+                    .left("Total Cumulative XP:")
+                    .right(String.format("%,d", plugin.getCumulativeXp()))
+                    .build());
+            }
         }
         
         // Show gem tracking section if enabled

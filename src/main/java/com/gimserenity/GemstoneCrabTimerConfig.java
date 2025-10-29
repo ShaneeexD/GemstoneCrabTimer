@@ -304,6 +304,18 @@ public interface GemstoneCrabTimerConfig extends Config
     {
         return false;
     }
+
+	@ConfigItem(
+        keyName = Constants.DISPLAY_CUMULATIVE_XP,
+        name = "Display cumulative XP",
+        description = "Display total XP gained across all crab kills",
+		section = statTracking,
+		position = 8
+    )
+    default boolean displayCumulativeXp()
+    {
+        return true;
+    }
 	
 	@ConfigSection(
 		name = "Gem Tracking",

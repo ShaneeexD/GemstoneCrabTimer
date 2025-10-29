@@ -18,6 +18,7 @@ public class Constants {
     public final static String DISPLAY_GEM_COUNT = "displayGemCount";
     public final static String DISPLAY_TOP3_COUNT = "displayTop3Count";
     public final static String CONFIG_KEY_TOP3_COUNT = "top3Count";
+    public final static String DISPLAY_CUMULATIVE_XP = "displayCumulativeXp";
     public final static String DISPLAY_OPALS = "displayOpals";
     public final static String DISPLAY_JADES = "displayJades";
     public final static String DISPLAY_RED_TOPAZ = "displayRedTopaz";
