@@ -45,8 +45,14 @@ An all-in-one RuneLite plugin for enhancing the Gemstone Crab boss experience.
 - Optional tracking for mining attempts, successful mines, failed mines, and total gems mined
 - Stats persist between sessions
 - Chat command to reset all stats, including gem tracking (!resetgemcrab)
+- Tracks Total Cumulative XP gained
 
 <img width="213" height="149" alt="image" src="https://github.com/user-attachments/assets/7a27de20-5309-4dd8-9647-88e11f44711c" />
+
+### Overlay Appearance
+- Overlay background color can be changed, so you can set it to your liking.
+- Overlay header color can be changed
+- Overlay row text can be changed
 
 ## Configuration Options
 
@@ -56,6 +62,11 @@ An all-in-one RuneLite plugin for enhancing the Gemstone Crab boss experience.
 - **Notification Message**: Customize the message displayed in the notification
 - **Notification Settings**: You can customize the notification settings to allow flashes & toggle if notifications require RuneLite to be focused or not
 
+### Overlay Appearance
+- **Overlay Background**: Choose the color for overlay background
+- **Header text color**: Choose the color for header text
+- **Item text color**: Choose the color for text rows
+  
 ### Highlights
 - **Highlight Tunnel**: Toggle tunnel highlighting on/off
 - **Tunnel Highlight Color**: Choose the color for tunnel highlighting
@@ -76,6 +87,7 @@ An all-in-one RuneLite plugin for enhancing the Gemstone Crab boss experience.
 - **Display total successful**: Toggle display of successful mining attempts
 - **Display total failed**: Toggle display of failed mining attempts
 - **Display total gems mined**: Toggle display of total gems mined
+- **Display cumulative XP**: Toggle display of total cumulative XP gained
 
 ### Gem Tracking
 - **Show overlay**: Toggle the gem tracking section on/off
@@ -97,6 +109,7 @@ GIM Serenity, Pino
 Special thanks to: 
 - AhDoozy for estimated time left and screen pulse options
 - trouttdev for optimising damage/dps calculation
+- MizterParadox - Added total cumulative damage and overlay appearance editor
 
 ## Support
 
@@ -106,6 +119,7 @@ For issues, suggestions, or contributions, please open an issue on the GitHub re
 
 ### V2.0.1
 - Fix: issue with non-breaking space in usernames for top 3
+- New: Added total cumulative damage and overlay appearance editor
 
 ### V2.0.0
 - Top 3 placement Tracking
