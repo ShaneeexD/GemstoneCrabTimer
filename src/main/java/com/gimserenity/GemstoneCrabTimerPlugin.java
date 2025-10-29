@@ -41,9 +41,9 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @PluginDescriptor(
-	name = "Gemstone Crab",
-	description = "All-in-one Gemstone Crab plugin for a better afk and informational experience.",
-	tags = {"boss", "hp", "notification", "gemstone", "crab", "afk", "info", "tracker", "dps"}
+    name = "Gemstone Crab (Dev)",
+    description = "All-in-one Gemstone Crab plugin for a better afk and informational experience. (Dev)",
+    tags = {"boss", "hp", "notification", "gemstone", "crab", "afk", "info", "tracker", "dps"}
 )
 public class GemstoneCrabTimerPlugin extends Plugin
 {

@@ -8,6 +8,7 @@ import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
 import net.runelite.client.config.Notification;
 import net.runelite.client.config.Range;
+import net.runelite.client.config.Alpha;
 
 @ConfigGroup("gemstonecrab")
 public interface GemstoneCrabTimerConfig extends Config
@@ -59,6 +60,52 @@ public interface GemstoneCrabTimerConfig extends Config
 		return "Gemstone Crab HP threshold reached!";
 	}
 		
+	@ConfigSection(
+		name = "Overlay Appearance",
+		description = "Overlay appearance settings",
+		position = 1
+	)
+	String overlayAppearance = "overlayAppearance";
+
+	@Alpha
+	@ConfigItem(
+		keyName = "overlayBackgroundColor",
+		name = "Overlay background color",
+		description = "Background color for the Gemstone Crab overlay panel",
+		section = overlayAppearance,
+		position = 0
+	)
+	default Color overlayBackgroundColor()
+	{
+		return new Color(18, 18, 18, 180);
+	}
+
+	@Alpha
+	@ConfigItem(
+		keyName = "overlayHeaderTextColor",
+		name = "Header text color",
+		description = "Text color used for section headers",
+		section = overlayAppearance,
+		position = 1
+	)
+	default Color overlayHeaderTextColor()
+	{
+		return Color.GREEN;
+	}
+
+	@Alpha
+	@ConfigItem(
+		keyName = "overlayItemTextColor",
+		name = "Item text color",
+		description = "Text color used for item rows",
+		section = overlayAppearance,
+		position = 2
+	)
+	default Color overlayItemTextColor()
+	{
+		return Color.WHITE;
+	}
+
 	@ConfigSection(
 		name = "Highlights",
 		description = "Highlight settings",

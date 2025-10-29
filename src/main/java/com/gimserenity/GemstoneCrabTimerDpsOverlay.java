@@ -22,6 +22,9 @@ public class GemstoneCrabTimerDpsOverlay extends Overlay
     private final PanelComponent panelComponent = new PanelComponent();
     private static final DecimalFormat DPS_FORMAT = new DecimalFormat("#,##0.0");
     
+    @Inject
+    private GemstoneCrabTimerConfig config;
+    
     // Gem item IDs for icons
     private static final int UNCUT_OPAL_ITEM_ID = net.runelite.api.gameval.ItemID.UNCUT_OPAL;
     private static final int UNCUT_JADE_ITEM_ID = net.runelite.api.gameval.ItemID.UNCUT_JADE;
@@ -69,7 +72,11 @@ public class GemstoneCrabTimerDpsOverlay extends Overlay
         
         // Set up the panel
         panelComponent.getChildren().clear();
-        panelComponent.setBackgroundColor(new Color(18, 18, 18, 180)); // Dark background
+        panelComponent.setBackgroundColor(config.overlayBackgroundColor());
+        
+        // Resolve text colors
+        Color headerColor = config.overlayHeaderTextColor();
+        Color itemTextColor = config.overlayItemTextColor();
         
         // Show main stats section if enabled
         if (configStore.getValue(Constants.SHOW_MAIN_STATS))
@@ -77,14 +84,16 @@ public class GemstoneCrabTimerDpsOverlay extends Overlay
             // Add title
             panelComponent.getChildren().add(TitleComponent.builder()
                 .text("Current Fight")
-                .color(Color.GREEN)
+                .color(headerColor)
                 .build());
                 
             // Add players interacting with crab
             if (configStore.getValue(Constants.DISPLAY_PLAYER_COUNT)) {
                 panelComponent.getChildren().add(LineComponent.builder()
                     .left("Players Fighting:")
+                    .leftColor(itemTextColor)
                     .right(String.valueOf(plugin.getPlayersInteractingWithCrab()))
+                    .rightColor(itemTextColor)
                     .build());
             }
             
@@ -92,7 +101,9 @@ public class GemstoneCrabTimerDpsOverlay extends Overlay
             if (configStore.getValue(Constants.DISPLAY_TOTAL_DAMAGE)) {
                 panelComponent.getChildren().add(LineComponent.builder()
                     .left("Total Damage:")
+                    .leftColor(itemTextColor)
                     .right(String.format("%,d", plugin.getTotalDamage()))
+                    .rightColor(itemTextColor)
                     .build());
             }
             
@@ -100,7 +111,9 @@ public class GemstoneCrabTimerDpsOverlay extends Overlay
             if (configStore.getValue(Constants.DISPLAY_DPS)) {
                 panelComponent.getChildren().add(LineComponent.builder()
                     .left("DPS:")
+                    .leftColor(itemTextColor)
                     .right(DPS_FORMAT.format(plugin.getCurrentDps()))
+                    .rightColor(itemTextColor)
                     .build());
             }
             
@@ -108,7 +121,9 @@ public class GemstoneCrabTimerDpsOverlay extends Overlay
             if (configStore.getValue(Constants.DISPLAY_XP_GAINED)) {
                 panelComponent.getChildren().add(LineComponent.builder()
                     .left("XP Gained:")
+                    .leftColor(itemTextColor)
                     .right(String.format("%,d", plugin.getTotalXpGained()))
+                    .rightColor(itemTextColor)
                     .build());
             }
             
@@ -117,7 +132,9 @@ public class GemstoneCrabTimerDpsOverlay extends Overlay
                 long seconds = plugin.getFightDuration() / 1000;
                 panelComponent.getChildren().add(LineComponent.builder()
                     .left("Duration:")
+                    .leftColor(itemTextColor)
                     .right(String.format("%d:%02d", seconds / 60, seconds % 60))
+                    .rightColor(itemTextColor)
                     .build());
             }
             
@@ -128,7 +145,9 @@ public class GemstoneCrabTimerDpsOverlay extends Overlay
                     long secondsLeft = timeLeftMillis / 1000;
                     panelComponent.getChildren().add(LineComponent.builder()
                         .left("Time Left:")
+                        .leftColor(itemTextColor)
                         .right(String.format("%d:%02d", secondsLeft / 60, secondsLeft % 60))
+                        .rightColor(itemTextColor)
                         .build());
                 }
             }
@@ -137,20 +156,24 @@ public class GemstoneCrabTimerDpsOverlay extends Overlay
         if (configStore.getValue(Constants.SHOW_STAT_TRACKING)) {
             panelComponent.getChildren().add(TitleComponent.builder()
                 .text("Kill Stats")
-                .color(Color.GREEN)
+                .color(headerColor)
                 .build());
 
             if (configStore.getValue(Constants.DISPLAY_KILL_COUNT)) {
                 panelComponent.getChildren().add(LineComponent.builder()
                     .left("Crabs Killed:")
+                    .leftColor(itemTextColor)
                     .right(String.valueOf(plugin.getCrabCount()))
+                    .rightColor(itemTextColor)
                     .build());
             }
 
             if (configStore.getValue(Constants.DISPLAY_MINING_ATTEMPTS)) {
                 panelComponent.getChildren().add(LineComponent.builder()
                     .left("Mining Attempts:")
+                    .leftColor(itemTextColor)
                     .right(String.valueOf(plugin.getMiningAttemptsCount()))
+                    .rightColor(itemTextColor)
                     .build());
             }
 
@@ -158,35 +181,45 @@ public class GemstoneCrabTimerDpsOverlay extends Overlay
             if (configStore.getValue(Constants.DISPLAY_MINED_COUNT)) {
                 panelComponent.getChildren().add(LineComponent.builder()
                     .left("Successful:")
+                    .leftColor(itemTextColor)
                     .right(String.valueOf(plugin.getMinedCount()))
+                    .rightColor(itemTextColor)
                     .build());
             }
 
             if (configStore.getValue(Constants.DISPLAY_FAILED_MINING_COUNT)) {
                 panelComponent.getChildren().add(LineComponent.builder()
                     .left("Failed:")
+                    .leftColor(itemTextColor)
                     .right(String.valueOf(plugin.getMiningFailedCount()))
+                    .rightColor(itemTextColor)
                     .build());
             }
 
             if (configStore.getValue(Constants.DISPLAY_GEM_COUNT)) {
                 panelComponent.getChildren().add(LineComponent.builder()
                     .left("Gems Mined:")
+                    .leftColor(itemTextColor)
                     .right(String.valueOf(plugin.getGemsCount()))
+                    .rightColor(itemTextColor)
                     .build());
             }
             
             if (configStore.getValue(Constants.DISPLAY_TOP3_COUNT)) {
                 panelComponent.getChildren().add(LineComponent.builder()
                     .left("Top 3:")
+                    .leftColor(itemTextColor)
                     .right(String.valueOf(plugin.getTop3Count()))
+                    .rightColor(itemTextColor)
                     .build());
             }
             
             if (configStore.getValue(Constants.DISPLAY_CUMULATIVE_XP)) {
                 panelComponent.getChildren().add(LineComponent.builder()
                     .left("Total Cumulative XP:")
+                    .leftColor(itemTextColor)
                     .right(String.format("%,d", plugin.getCumulativeXp()))
+                    .rightColor(itemTextColor)
                     .build());
             }
         }
@@ -196,7 +229,7 @@ public class GemstoneCrabTimerDpsOverlay extends Overlay
             
             panelComponent.getChildren().add(TitleComponent.builder()
                 .text("Gem Tracking")
-                .color(Color.GREEN)
+                .color(headerColor)
                 .build());
             
             // First row panel for first 4 gems
