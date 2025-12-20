@@ -117,6 +117,9 @@ For issues, suggestions, or contributions, please open an issue on the GitHub re
 
 ## Changelog
 
+### V2.1.2
+- Fix: Issue with reset command not working after name sanitization
+
 ### V2.1.1
 - Fix: Issue with reset command resetting other players stats
 
