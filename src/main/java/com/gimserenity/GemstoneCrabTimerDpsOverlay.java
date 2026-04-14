@@ -216,7 +216,7 @@ public class GemstoneCrabTimerDpsOverlay extends Overlay
             
             if (configStore.getValue(Constants.DISPLAY_CUMULATIVE_XP)) {
                 panelComponent.getChildren().add(LineComponent.builder()
-                    .left("Total Cumulative XP:")
+                    .left("Total XP:")
                     .leftColor(itemTextColor)
                     .right(String.format("%,d", plugin.getCumulativeXp()))
                     .rightColor(itemTextColor)
